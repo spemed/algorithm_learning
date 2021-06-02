@@ -203,3 +203,57 @@ func NewMinStack() *minStack {
 		min:  NewActiveStack(),
 	}
 }
+
+type twoQueueStack struct {
+	dataQueue Queue
+	helpQueue Queue
+}
+
+func NewTwoQueueStack() *twoQueueStack {
+	return &twoQueueStack{
+		dataQueue: NewActiveQueue(),
+		helpQueue: NewActiveQueue(),
+	}
+}
+
+func (*twoQueueStack) IsFull() bool {
+	return false
+}
+
+func (stack *twoQueueStack) IsEmpty() bool {
+	return stack.dataQueue.IsEmpty() && stack.helpQueue.IsEmpty()
+}
+
+//入栈只入data队列
+func (stack *twoQueueStack) Push(item int) error {
+	return stack.dataQueue.Enqueue(item)
+}
+
+//出栈时把除队首元素以外的其他元素都迁移到help队列中
+func (stack *twoQueueStack) Pop() (int, error) {
+	if stack.IsEmpty() {
+		return 0, errors.New("stack is empty")
+	}
+	//用于记录队尾最后一个元素的值
+	lastVal := 0
+	for {
+		//弹出队首元素
+		item, _ := stack.dataQueue.Dequeue()
+		lastVal = item
+		//data队列为空,说明前n-1个元素已经入help队列了
+		if stack.dataQueue.IsEmpty() {
+			break
+		}
+		_ = stack.helpQueue.Enqueue(item)
+	}
+	//交换data和help的引用,下次pop时进行同样的流程
+	stack.dataQueue, stack.helpQueue = stack.helpQueue, stack.dataQueue
+	return lastVal, nil
+}
+
+/**
+非常蠢的办法,仅供娱乐哈
+*/
+func (stack *twoQueueStack) Top() (int, error) {
+	return 0, errors.New("no support")
+}
