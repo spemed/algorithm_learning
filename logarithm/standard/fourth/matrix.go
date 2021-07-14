@@ -1,4 +1,4 @@
-package forth
+package fourth
 
 import "fmt"
 
@@ -44,45 +44,45 @@ func (p *point) addBottom(y int) *point {
 	return p
 }
 
-func (p *point) 小于(other *point) bool {
+func (p *point) smaller(other *point) bool {
 	return p.x < other.x && p.y < other.y
 }
 
 func printEdge1(edge [][]int) {
+	if len(edge) < 0 {
+		fmt.Println("empty edge")
+		return
+	}
+
+	lastLen := len(edge[0])
+	for i := 1; i < len(edge); i++ {
+		if lastLen != len(edge[i]) {
+			fmt.Println("invalid edge")
+			return
+		}
+	}
+
 	leftTop := &point{
 		0, 0,
 	}
 	rightBottom := &point{
-		len(edge) - 1, len(edge) - 1,
+		len(edge) - 1, len(edge[0]) - 1,
 	}
-	for leftTop.小于(rightBottom) {
-
+	for leftTop.smaller(rightBottom) {
 		for i := leftTop.y; i < rightBottom.y; i++ {
-			fmt.Print(edge[leftTop.x][i])
-			fmt.Print(" ")
+			fmt.Printf("%d ", edge[leftTop.x][i])
 		}
-		fmt.Print("\n")
-
 		for i := leftTop.x; i < rightBottom.x; i++ {
-			fmt.Print(edge[i][rightBottom.y])
-			fmt.Print(" ")
+			fmt.Printf("%d ", edge[i][rightBottom.y])
 		}
-		fmt.Print("\n")
-
 		for i := rightBottom.y; i > leftTop.y; i-- {
-			fmt.Print(edge[rightBottom.x][i])
-			fmt.Print(" ")
+			fmt.Printf("%d ", edge[rightBottom.x][i])
 		}
-
-		fmt.Print("\n")
 		for i := rightBottom.x; i > leftTop.x; i-- {
-			fmt.Print(edge[i][leftTop.y])
-			fmt.Print(" ")
+			fmt.Printf("%d ", edge[i][leftTop.y])
 		}
-		fmt.Print("\n")
-
 		leftTop.addBottom(1).addRight(1)
-
 		rightBottom.addLeft(1).addTop(1)
 	}
+	fmt.Println()
 }
